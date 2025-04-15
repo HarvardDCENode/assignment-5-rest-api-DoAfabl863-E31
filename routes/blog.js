@@ -6,7 +6,7 @@ const router = express.Router();
 // Routes start
 
 // Create a new blog post
-router.post('/api/blogs', async (req, res) => {
+router.post('/blogs', async (req, res) => {
   try {
     const { title, content, author, tags } = req.body;
     const newBlog = new Blog({ title, content, author, tags });
@@ -23,17 +23,21 @@ router.get('/new', (req, res) => {
   });
   
 // List all blog posts
-router.get('/api/blogs', async (req, res) => {
+router.get('/blogs', async (req, res) => {
+  console.log("🟢 Incoming request to /api/blogs"); // Debugging log
   try {
     const posts = await Blog.find();
+    console.log("🟡 Found posts:", posts); // Debugging log
     res.status(200).json(posts);
   } catch (err) {
+    console.error("🔴 Error fetching blogs:", err.message); // Debugging log
     res.status(500).json({ error: 'Error fetching blog posts: ' + err.message });
   }
 });
 
+
 // Show details of a single blog post
-router.get('/api/blogs/:id', async (req, res) => {
+router.get('/blogs/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid Blog ID' });
@@ -49,7 +53,7 @@ router.get('/api/blogs/:id', async (req, res) => {
 });
   
 // Edit a blog post
-router.put('/api/blogs/:id', async (req, res) => {
+router.put('/blogs/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid Blog ID' });
@@ -83,7 +87,7 @@ router.get('/:id/edit', async (req, res) => {
   });
 
 // Delete a blog post
-router.delete('/api/blogs/:id', async (req, res) => {
+router.delete('/blogs/:id', async (req, res) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
       return res.status(400).json({ error: 'Invalid Blog ID' });

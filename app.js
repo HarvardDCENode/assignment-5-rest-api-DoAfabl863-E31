@@ -16,10 +16,15 @@ app.set('view engine', 'pug');
 // Middleware
 // app.use(express.urlencoded({ extended: false }));
 app.use(express.urlencoded({ extended: true })); // Parse form data
+app.use(express.json()); // Enable JSON body parsing for HW5
 
 // Routes
 app.use('/', indexRouter);
-app.use('/blog', blogRouter); // Update blog routes under '/blog'
+app.use((req, res, next) => {
+  console.log(`🟢 Request received: ${req.method} ${req.url}`);
+  next();
+});
+app.use('/api', blogRouter); // Update blog routes under '/api' for HW5
 
 
 // Static 
