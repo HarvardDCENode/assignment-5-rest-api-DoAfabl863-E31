@@ -6,71 +6,66 @@ const router = express.Router();
 // Routes start
 
 // Create a new blog post
-router.post('/new', async (req, res) => {
-    try {
-      const { title, content, author, tags } = req.body; // Extract data from the form submission
-      const newPost = new Blog({ title, content, author, tags });
-      await newPost.save(); // Save the new post to the database
-      res.redirect('/blog'); // Redirect to the list of blog posts
-    } catch (err) {
-      res.status(500).send('Error creating blog post: ' + err.message);
-    }
-  });
+router.post('/api/blogs', async (req, res) => {
+  try {
+    const { title, content, author, tags } = req.body;
+    const newBlog = new Blog({ title, content, author, tags });
+    await newBlog.save();
+    res.status(201).json(newBlog);
+  } catch (err) {
+    res.status(500).json({ error: 'Error creating blog post: ' + err.message });
+  }
+});
   
-// Render the form to create a new blog post
+// Render the form to create a new blog post // Keep for now, ie HW5
 router.get('/new', (req, res) => {
     res.render('blog/form', { post: null }); // Pass null as 'post' ie for creating a new blog post
   });
   
 // List all blog posts
-router.get('/', async (req, res) => {
-    try {
-      const posts = await Blog.find(); // Fetch all posts from the database
-      res.render('blog/list', { posts }); // Render the 'list' Pug template with the posts
-    } catch (err) {
-      res.status(500).send('Error fetching blog posts: ' + err.message);
-    }
-  });
+router.get('/api/blogs', async (req, res) => {
+  try {
+    const posts = await Blog.find();
+    res.status(200).json(posts);
+  } catch (err) {
+    res.status(500).json({ error: 'Error fetching blog posts: ' + err.message });
+  }
+});
 
 // Show details of a single blog post
-/*router.get('/:id', async (req, res) => {
-    try {
-      const post = await Blog.findById(req.params.id); // Find the post by ID
-      res.render('blog/details', { post }); // Render the 'details' Pug template with the post data
-    } catch (err) {
-      res.status(500).send('Error fetching blog post: ' + err.message);
-    }
-  });*/
-
-router.get('/:id', async (req, res) => {
+router.get('/api/blogs/:id', async (req, res) => {
   try {
-    // Validate if the ID is a valid MongoDB ObjectId
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(400).send('Invalid Blog ID');
+      return res.status(400).json({ error: 'Invalid Blog ID' });
     }
-    
-    const post = await Blog.findById(req.params.id); // Fetch the blog post
+    const post = await Blog.findById(req.params.id);
     if (!post) {
-      return res.status(404).send('Blog post not found');
+      return res.status(404).json({ error: 'Blog post not found' });
     }
-    res.render('blog/details', { post }); // Render the 'details' Pug template with the post data
+    res.status(200).json(post);
   } catch (err) {
-    res.status(500).send('Error fetching blog post: ' + err.message);
+    res.status(500).json({ error: 'Error fetching blog post: ' + err.message });
   }
 });
   
 // Edit a blog post
-router.post('/:id/edit', async (req, res) => {
-    try {
-      const { title, content, author, tags } = req.body; // Extract updated data from the form submission
-      await Blog.findByIdAndUpdate(req.params.id, { title, content, author, tags });
-      res.redirect('/blog/' + req.params.id); // Redirect to the updated post's details page
-    } catch (err) {
-      res.status(500).send('Error updating blog post: ' + err.message);
+router.put('/api/blogs/:id', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid Blog ID' });
     }
-  });
+    const { title, content, author, tags } = req.body;
+    const updatedBlog = await Blog.findByIdAndUpdate(req.params.id, { title, content, author, tags }, { new: true });
+    if (!updatedBlog) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    res.status(200).json(updatedBlog);
+  } catch (err) {
+    res.status(500).json({ error: 'Error updating blog post: ' + err.message });
+  }
+});
   
-// Render the edit form for a blog post
+// Render the edit form for a blog post // Keep for now, ie HW5
 router.get('/:id/edit', async (req, res) => {
     try {
       // Use mongoose.Types.ObjectId.isValid for validation
@@ -88,14 +83,20 @@ router.get('/:id/edit', async (req, res) => {
   });
 
 // Delete a blog post
-router.post('/:id/delete', async (req, res) => {
-    try {
-      await Blog.findByIdAndDelete(req.params.id); // Delete the post by ID
-      res.redirect('/blog'); // Redirect to the list of blog posts
-    } catch (err) {
-      res.status(500).send('Error deleting blog post: ' + err.message);
+router.delete('/api/blogs/:id', async (req, res) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({ error: 'Invalid Blog ID' });
     }
-  });
+    const deletedBlog = await Blog.findByIdAndDelete(req.params.id);
+    if (!deletedBlog) {
+      return res.status(404).json({ error: 'Blog post not found' });
+    }
+    res.status(200).json({ message: 'Blog post deleted successfully', deletedBlog });
+  } catch (err) {
+    res.status(500).json({ error: 'Error deleting blog post: ' + err.message });
+  }
+});
   
 // Routes end  
 

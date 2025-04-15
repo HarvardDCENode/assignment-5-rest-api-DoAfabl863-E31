@@ -1,10 +1,46 @@
 extends ../layout
 
 block content
-  h1 #{post.title}
-  p Author: #{post.author}
-  p Published: #{post.createdAt.toDateString()}
-  p #{post.content}
-  a(href=`/blog/${post._id}/edit`) Edit
-  form(action=`/blog/${post._id}/delete`, method="POST")
-    button(type="submit") Delete
+  h1#blog-title
+  p Author: <span id="blog-author"></span>
+  p Published: <span id="blog-date"></span>
+  p#blog-content
+  a#edit-link Edit
+  form#delete-form
+    button(type="button" onclick="deleteBlog()") Delete
+
+  script.
+    async function fetchBlog() {
+      try {
+        const blogId = window.location.pathname.split('/').pop(); // Extract blog ID from URL
+        const response = await fetch(`/api/blogs/${blogId}`);
+        const blog = await response.json();
+
+        document.getElementById('blog-title').innerText = blog.title;
+        document.getElementById('blog-author').innerText = blog.author;
+        document.getElementById('blog-date').innerText = new Date(blog.createdAt).toDateString();
+        document.getElementById('blog-content').innerText = blog.content;
+
+        document.getElementById('edit-link').href = `/blog/${blog._id}/edit`;
+        document.getElementById('delete-form').setAttribute("data-id", blog._id);
+      } catch (error) {
+        console.error('Error fetching blog post:', error);
+      }
+    }
+
+    async function deleteBlog() {
+      try {
+        const blogId = document.getElementById('delete-form').getAttribute("data-id");
+        const response = await fetch(`/api/blogs/${blogId}`, { method: "DELETE" });
+
+        if (response.ok) {
+          window.location.href = "/blog"; // Redirect to blog list after deletion
+        } else {
+          console.error("Error deleting blog post");
+        }
+      } catch (error) {
+        console.error("Error:", error);
+      }
+    }
+
+    fetchBlog();

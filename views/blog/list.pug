@@ -2,9 +2,27 @@ extends ../layout
 
 block content
   h1 Student Don Afable's Blog Site
-  ul
-    each post in posts
-      li
-        a(href=`/blog/${post._id}`) #{post.title}
-        p #{post.author}
-        p #{post.createdAt.toDateString()}
+  ul#blog-list
+
+  script.
+    async function fetchBlogs() {
+      try {
+        const response = await fetch('/api/blogs'); // Call API to get blog posts
+        const blogs = await response.json();
+        const list = document.getElementById('blog-list');
+
+        blogs.forEach(blog => {
+          const li = document.createElement('li');
+          li.innerHTML = `
+            <a href="/blog/${blog._id}">${blog.title}</a>
+            <p>${blog.author}</p>
+            <p>${new Date(blog.createdAt).toDateString()}</p>
+          `;
+          list.appendChild(li);
+        });
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      }
+    }
+
+    fetchBlogs();
