@@ -7,3 +7,5 @@ You should build your application in this repo cloned for you in Github Classroo
 Testing SSH setup by appending a new line. // add new line to file
 
 Testing SSH setup by appending a new line. // add new line to file
+
+Testing SSH setup by appending a new line. // add new line to file
