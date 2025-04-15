@@ -1,0 +1,10 @@
+extends ../layout
+
+block content
+  h1 #{post.title}
+  p Author: #{post.author}
+  p Published: #{post.createdAt.toDateString()}
+  p #{post.content}
+  a(href=`/blog/${post._id}/edit`) Edit
+  form(action=`/blog/${post._id}/delete`, method="POST")
+    button(type="submit") Delete

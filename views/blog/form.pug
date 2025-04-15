@@ -1,0 +1,19 @@
+extends ../layout
+
+block content
+  h1 #{post ? 'Edit Blog Post' : 'Create New Blog Post'}
+  form(action=post ? `/blog/${post._id}/edit` : '/blog/new', method="POST") 
+    div
+      label(for="title") Title:
+      input(type="text", name="title", id="title", value=post ? post.title : '', required)
+    div
+      label(for="content") Content:
+      textarea(name="content", id="content", required)= post ? post.content : ''
+    div
+      label(for="author") Author:
+      input(type="text", name="author", id="author", value=post ? post.author : '', required)
+    div
+      label(for="tags") Tags (comma separated):
+      input(type="text", name="tags", id="tags", value=post ? post.tags.join(', ') : '')
+    div
+      button(type="submit") #{post ? 'Update Post' : 'Create Post'}

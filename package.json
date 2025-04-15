@@ -1,0 +1,21 @@
+{
+  "name": "assignment-4-express-routing-mongodb-and-mongoose-new-DoAfabl863-E31",
+  "version": "1.0.0",
+  "description": "The description of this assignment can be found in Canvas at [Assignment #4](https://canvas.harvard.edu/courses/150064/assignments/906134) (Spring 2025)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./bin/www",
+    "dev": "nodemon ./bin/www"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.1",
+    "nodemon": "^3.1.9",
+    "pug": "^3.0.3"
+  }
+}

@@ -1,0 +1,8 @@
+extends ../layout
+
+block content
+  h1= title
+  form(action="/add", method="get")
+    input(type="text", name="item", placeholder="Enter item")
+    input(type="text", name="category", placeholder="Enter category")
+    button(type="submit") Submit
